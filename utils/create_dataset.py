@@ -5,10 +5,10 @@ from transformers import AutoTokenizer
 data_dic = json.load(open("/home/ml/qa_system_llm/copus/json_files/regulation_all.json"))
 ds = Dataset.from_dict(data_dic)
 model_checkpoint = "/home/ml/qa_system_llm/model/Baichuan2-7B-Chat"
-tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, use_fast=False, trust_remote=True)
+tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, use_fast=False, trust_remote_code=True)
 def tokenize_function(examples):
     return tokenizer(examples["text"])
-tokenized_datasets = datasets.map(tokenize_function, batched=True, num_proc=4, remove_columns=["text"])
+tokenized_datasets = ds.map(tokenize_function, batched=True, num_proc=2, remove_columns=["text"])
 block_size = 128
 def group_texts(examples):
     # Concatenate all texts.
@@ -30,4 +30,4 @@ lm_datasets = tokenized_datasets.map(
     num_proc=4,
 )
 
-print(tokenizer.decode(lm_datasets[0]["input_ids"]))
+# print(tokenizer.decode(lm_datasets[0]["input_ids"]))
